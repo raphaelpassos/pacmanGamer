@@ -49,14 +49,60 @@ class Game:
 
     def carregar_arquivos(self):
             #Carregar os arquivos de audio e imagens
-            diretorio_imagens = os.path.join(os.getcwd(), 'imagens')
-            self.diretorio_audios = os.path.join(os.getcwd(), 'audios')
+            diretorio_imagens = os.path.join(os.getcwd(), 'images')
+            self.diretorio_sounds = os.path.join(os.getcwd(), 'sounds')
             self.spritesheet = os.path.join(diretorio_imagens, constantes.SPRITESHEET)
             self.pacman_start_logo = os.path.join(diretorio_imagens, constantes.PACMAN_START_LOGO)
             self.pacman_start_logo = pygame.image.load(self.pacman_start_logo).convert()
+    
+    def mostrar_texto(self, texto, tamanho, cor, x, y):
+        #Exibe um texto na tela do jogo
+        fonte = pygame.font.Font(self.fonte, tamanho)
+        texto = fonte.render(texto, True, cor)
+        texto_rect = texto.get_rect()
+        texto_rect.midtop = (x, y)
+        self.tela.blit(texto, texto_rect)
+
+    def mostrar_start_logo(self, x, y):
+        start_logo_rect = self.pacman_start_logo.get_rect()
+        start_logo_rect.midtop = (x, y)
+        self.tela.blit(self.pacman_start_logo, start_logo_rect)
 
     def mostrar_tela_start(self):
-        pass
+        pygame.mixer.music.load(os.path.join(self.diretorio_sounds, constantes.MUSICA_START))
+        pygame.mixer.music.play()
+
+        self.mostrar_start_logo(constantes.LARGURA / 2, 20)
+
+        self.mostrar_texto(
+        'Pressione uma tecla para jogar', 
+        32, 
+        constantes.AMARELO,
+        constantes.LARGURA / 2,
+        320
+    )
+        self.mostrar_texto( 
+        'Desenvolvido por Ralph',
+        19,
+        constantes.BRANCO,
+        constantes.LARGURA / 2,
+        570
+    )   
+        pygame.display.flip()
+        self.esperar_por_jogador()
+
+    def esperar_por_jogador(self):
+        esperando = True
+        while esperando:
+            self.relogio.tick(constantes.FPS)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    esperando = False
+                    self.esta_rodando = False
+                if event.type == pygame.KEYUP:
+                    esperando = False    
+                    pygame.mixer.music.stop()         
+                    pygame.mixer.Sound(os.path.join(self.diretorio_sounds, constantes.TECLA_START)).play()  
 
     def mostrar_tela_game_over(self):
         pass
